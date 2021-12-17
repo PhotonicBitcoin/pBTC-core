@@ -3459,12 +3459,12 @@ static bool ContextualCheckBlockHeader(const CBlockHeader& block, BlockValidatio
     if (IsDGWActive(pindexPrev->nHeight+1))
     {
         if (block.GetBlockTime() > nAdjustedTime + MAX_FUTURE_BLOCK_TIME_DGW)
-            return state.Invalid(false, REJECT_INVALID, "time-too-new", "block timestamp too far in the future");
+            return state.Invalid(BlockValidationResult::BLOCK_INVALID_HEADER, "time-too-new", "block timestamp too far in the future");
     }
     else
     {
         if (block.GetBlockTime() > nAdjustedTime + MAX_FUTURE_BLOCK_TIME)
-            return state.Invalid(false, REJECT_INVALID, "time-too-new", "block timestamp too far in the future");
+            return state.Invalid(BlockValidationResult::BLOCK_INVALID_HEADER, "time-too-new", "block timestamp too far in the future");
     }
 
     // Reject outdated version blocks when 95% (75% on testnet) of the network has upgraded:

@@ -1230,7 +1230,7 @@ UniValue getblockchaininfo(const JSONRPCRequest& request)
     obj.pushKV("headers",               pindexBestHeader ? pindexBestHeader->nHeight : -1);
     obj.pushKV("bestblockhash",         tip->GetBlockHash().GetHex());
     obj.pushKV("difficulty",            (double)GetDifficulty(tip));
-    if (IsDGWActive(chainActive.Height())) {
+    if (IsDGWActive(ChainActive().Height())) {
         obj.pushKV("difficulty_algorithm", "DGW-180");
     } else {
         obj.pushKV("difficulty_algorithm", "BTC");

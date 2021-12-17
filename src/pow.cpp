@@ -9,7 +9,6 @@
 #include <chain.h>
 #include <primitives/block.h>
 #include <uint256.h>
-#include "util.h"
 #include "validation.h"
 #include "chainparams.h"
 
