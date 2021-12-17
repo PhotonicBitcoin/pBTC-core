@@ -128,9 +128,12 @@ public:
             }
         };
         chainTxData = {};
+
+        // DGW Activation
+        nDGWActivationBlock = 4500;
     }
 };
-
+		
 /**
  * Testnet
  */
@@ -204,9 +207,13 @@ public:
         };
 
         chainTxData = ChainTxData{};
+
+        // DGW Activation
+        nDGWActivationBlock = 200;
     }
 };
 
+		
 /**
  * Regression test
  */
@@ -272,6 +279,9 @@ public:
 
         chainTxData = {};
 
+        // DGW Activation
+        nDGWActivationBlock = 200;
+		
         base58Prefixes[PUBKEY_ADDRESS] = std::vector<unsigned char>(1,111);
         base58Prefixes[SCRIPT_ADDRESS] = std::vector<unsigned char>(1,196);
         base58Prefixes[SECRET_KEY] =     std::vector<unsigned char>(1,239);
