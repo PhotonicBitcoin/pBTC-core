@@ -21,7 +21,7 @@ static const int GETHEADERS_VERSION = 31800;
 static const int MIN_PEER_PROTO_VERSION = GETHEADERS_VERSION;
 
 //! In this version the new DGW difficulty algorithm is active
-static const int DGW_DIFFICULTY_ALGO = 70016
+static const int DGW_DIFFICULTY_ALGO = 70016;
   
 //! nTime field added to CAddress, starting with this version;
 //! if possible, avoid requesting addresses nodes older than this
