@@ -130,7 +130,7 @@ public:
         chainTxData = {};
 
         // DGW Activation
-        nDGWActivationBlock = 4500;
+        nDGWActivationBlock = 3660;
     }
 };
 		
