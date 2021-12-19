@@ -81,6 +81,6 @@ By demand of PoWx Team representative ie. (@kazumi-opow#5538 - Discord) we remov
 Please feel free to go to their project for more info: https://github.com/PoWx-Org/obtc-core
 
 
-![Imgur Image](http://i.imgur.com/zTONrOD.jpghttps://i.imgur.com/7HCXr4x.png)
+![Imgur Image](https://i.imgur.com/7HCXr4x.png)
 
 We also thank everyone who believed in us but is not on the list.
