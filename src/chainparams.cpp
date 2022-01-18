@@ -124,13 +124,23 @@ public:
 
         checkpointData = {
             {
-                {0, GENESIS_HASH}
+                {0, GENESIS_HASH},
+		{ 500, uint256S("0x00000000e491f850b5a010d3de300ba7d29f6b6599f0380f4e58ad79b205538c")},
+		{ 1000, uint256S("0x00000000e491f850b5a010d3de300ba7d29f6b6599f0380f4e58ad79b205538c")},
+                { 1111, uint256S("0x000000000001fa5212e258eb76750c1809c52c38a6e1470dda1cccde9ab3c80e")},
+                { 2000, uint256S("0x00000000000148f292d52fc0ebe0e59954d513cbc5c0c959ddc91011c1b3b673")},
+                { 2222, uint256S("0x00000000000197915eb3ce93c52989f94f171147d61672aef538842533e32e6d")},
+                { 3000, uint256S("0x0000000000013c7c14ad2a649f54b559ae348b8cd82018ab447d8e72c7ce28d4")},
+                { 3333, uint256S("0x00000000000016bd1dce18b0be6f41d421dc450f125e1feb0969b39c998652b3")},
             }
         };
         chainTxData = {};
+
+        // DGW Activation
+        nDGWActivationBlock = 3660;
     }
 };
-
+		
 /**
  * Testnet
  */
@@ -204,9 +214,13 @@ public:
         };
 
         chainTxData = ChainTxData{};
+
+        // DGW Activation
+        nDGWActivationBlock = 200;
     }
 };
 
+		
 /**
  * Regression test
  */
@@ -272,6 +286,9 @@ public:
 
         chainTxData = {};
 
+        // DGW Activation
+        nDGWActivationBlock = 200;
+		
         base58Prefixes[PUBKEY_ADDRESS] = std::vector<unsigned char>(1,111);
         base58Prefixes[SCRIPT_ADDRESS] = std::vector<unsigned char>(1,196);
         base58Prefixes[SECRET_KEY] =     std::vector<unsigned char>(1,239);
