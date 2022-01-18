@@ -79,26 +79,8 @@ Photonic Bitcoin Core project:
 
 
 Optical Bitcoin Contributors (oBTC & PoWx)
-------------
-
-Below is the list of people who brought the heavyhash and oBTC project to life.
-
-* Mike Dubrovsky [Co-Founder]
-* Roman Zhytar [SW Developer]
-* Anton Kovalov [SW Developer]
-* Egor Shymko [SW Developer]
-* Nikita Koypish [SW Developer]
-* Vsevolod Hulchuk [SW Developer]
-* Mustafa Hammood [HW Prototype Developer; System]
-* Jaspreet Joha [HW Prototype Developer; Simulations]
-* Stephen Lin [HW Prototype Developer; Simulations]
-* Sunil Kochikar Pai [HW Prototype Developer; Matrix Mult Core]
-* Marshall Ball [Cryptography; HeavyHash]
-* Lucianna Kiffer [Cryptoeceonomics]
-* Guy Corem [Sage Advice]
-* Diedrik Vermeulen [Silicon Photonics Advisor; System Architecture and Link Budgets]
-* Bogdan Penkovsky [Co-Founder]
+-----------
 
 oBTC Code: https://github.com/PoWx-Org/obtc-core
 
-We also thank everyone who believed in us but is not on the list.
+We would like to thank oBTC and PoWx to allowing pBTC to be where it is today.
