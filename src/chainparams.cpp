@@ -70,6 +70,7 @@ public:
         consensus.SegwitHeight = 1;
         consensus.MinBIP9WarningHeight = 1;
         consensus.powLimit = uint256S("000fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff");
+		consensus.phopowLimit = uint256S("000fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff");
         consensus.nPowTargetTimespan = 5 * 60 * 60; // two days
         consensus.nPowTargetSpacing = 5 * 60;
         consensus.fPowAllowMinDifficultyBlocks = false;
@@ -138,6 +139,11 @@ public:
 
         // DGW Activation
         nDGWActivationBlock = 3660;
+		
+
+		// PHOPOW Activation
+        nPHOOPOWActivationTime = 4585967301; // Just a placeholder for now * CHANGEME *
+        nPHOPOWActivationTime = nPHOOPOWActivationTime;
     }
 };
 		
@@ -160,6 +166,7 @@ public:
         consensus.MinBIP9WarningHeight = 1;
         // using less pow amount for testnet to speed up mining
         consensus.powLimit = uint256S("000fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff");
+		consensus.phopowLimit = uint256S("000fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff");
         consensus.nPowTargetTimespan = 5 * 60 * 60; // two weeks
         consensus.nPowTargetSpacing = 5 * 60;
         consensus.fPowAllowMinDifficultyBlocks = false;
@@ -217,6 +224,10 @@ public:
 
         // DGW Activation
         nDGWActivationBlock = 200;
+		
+		// PHOPOW Activation
+        nPHOOPOWActivationTime = 4585967301; // Just a placeholder for now * CHANGEME *
+        nPHOPOWActivationTime = nPHOOPOWActivationTime;
     }
 };
 
@@ -238,6 +249,7 @@ public:
         consensus.SegwitHeight = 0; // SEGWIT is always activated on regtest unless overridden
         consensus.MinBIP9WarningHeight = 0;
         consensus.powLimit = uint256S("7fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff");
+		consensus.phopowLimit = uint256S("7fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff");
         consensus.nPowTargetTimespan = 5 * 60 * 60; // two weeks
         consensus.nPowTargetSpacing = 5 * 60;
         consensus.fPowAllowMinDifficultyBlocks = true;
@@ -288,6 +300,10 @@ public:
 
         // DGW Activation
         nDGWActivationBlock = 200;
+		
+		// PHOPOW Activation
+        nPHOOPOWActivationTime = 4585967301; // Just a placeholder for now * CHANGEME *
+        nPHOPOWActivationTime = nPHOOPOWActivationTime;
 		
         base58Prefixes[PUBKEY_ADDRESS] = std::vector<unsigned char>(1,111);
         base58Prefixes[SCRIPT_ADDRESS] = std::vector<unsigned char>(1,196);

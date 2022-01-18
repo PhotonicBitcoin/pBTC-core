@@ -111,6 +111,7 @@ protected:
     ChainTxData chainTxData;
 
     unsigned int nDGWActivationBlock;
+    uint32_t nPHOOPOWActivationTime;
 };
 
 /**
