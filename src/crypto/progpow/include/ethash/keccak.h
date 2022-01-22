@@ -4,8 +4,10 @@
  */
 
 #pragma once
+#ifndef CRYPTO_PROGPOW_KECCAK_H_
+#define CRYPTO_PROGPOW_KECCAK_H_
 
-#include <crypto/ethash/include/ethash/hash_types.h>
+#include <crypto/progpow/include/ethash/hash_types.h>
 
 #include <stddef.h>
 
@@ -47,3 +49,4 @@ union ethash_hash512 ethash_keccak512_64(const uint8_t data[64]) NOEXCEPT;
 #ifdef __cplusplus
 }
 #endif
+#endif // !CRYPTO_PROGPOW_KECCAK_H_

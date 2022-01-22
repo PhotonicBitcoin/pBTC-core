@@ -77,8 +77,8 @@ unsigned int static DarkGravityWave(const CBlockIndex* pindexLast, const CBlockH
     if (bnNew > bnPowLimit) {
         bnNew = bnPowLimit;
     }
-
-    return bnNew.GetCompact();
+     return bnNew.GetCompact();
+	
 }
 
 unsigned int GetNextWorkRequiredBTC(const CBlockIndex* pindexLast, const CBlockHeader *pblock, const Consensus::Params& params)

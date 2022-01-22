@@ -80,6 +80,11 @@ struct Params {
     int64_t DifficultyAdjustmentInterval() const { return nPowTargetTimespan / nPowTargetSpacing; }
     uint256 nMinimumChainWork;
     uint256 defaultAssumeValid;
+    /** switch to ProgPoW (PP) time */
+    uint32_t nPPSwitchTime;
+    /** initial difficulty for ProgPOW */
+    int nInitialPPDifficulty;
+
 };
 } // namespace Consensus
 

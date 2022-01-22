@@ -8,7 +8,9 @@
 
 #include <primitives/transaction.h>
 #include <serialize.h>
+#include "crypto/progpow.h"
 #include <uint256.h>
+#include "crypto/progpow.h"
 
 /** Nodes collect new transactions into a block, hash them into a hash tree,
  * and scan through nonce values to make the block's hash satisfy proof-of-work
@@ -26,7 +28,12 @@ public:
     uint256 hashMerkleRoot;
     uint32_t nTime;
     uint32_t nBits;
-    uint32_t nNonce;
+    uint32_t nNonce;   //! std satoshi
+
+    // PhoPow 
+    uint32_t nHeight;
+    uint64_t nNonce64;
+    uint256 mix_hash;
 
     CBlockHeader()
     {
@@ -42,7 +49,19 @@ public:
         READWRITE(hashMerkleRoot);
         READWRITE(nTime);
         READWRITE(nBits);
-        READWRITE(nNonce);
+
+        // PhoPoW
+        // Return std 4byte, if ProgPoW return 8byte
+       if (IsProgPow()) {
+
+            READWRITE(nHeight);
+            READWRITE(nNonce64);
+            READWRITE(mix_hash);
+
+        } else {
+
+            READWRITE(nNonce);
+		}
     }
 
     void SetNull()
@@ -53,6 +72,11 @@ public:
         nTime = 0;
         nBits = 0;
         nNonce = 0;
+
+        // PhoPow
+        nNonce64 = 0;
+        nHeight  = 0;
+        mix_hash.SetNull();
     }
 
     bool IsNull() const
@@ -62,11 +86,20 @@ public:
 
     uint256 GetHash() const;
     uint256 GetPoWHash() const;
+    uint256 GetHashFull(uint256& mix_hash) const;
 
     int64_t GetBlockTime() const
     {
         return (int64_t)nTime;
     }
+
+
+    bool IsProgPow() const;
+
+    CProgPowHeader GetProgPowHeader() const;
+    uint256 GetProgPowHeaderHash() const;
+    uint256 GetProgPowHashFull(uint256& mix_hash) const;
+    uint256 GetProgPowHashLight() const;
 };
 
 
@@ -113,7 +146,14 @@ public:
         block.hashMerkleRoot = hashMerkleRoot;
         block.nTime          = nTime;
         block.nBits          = nBits;
-        block.nNonce         = nNonce;
+
+        if (IsProgPow()) {
+            block.nHeight    = nHeight;
+            block.nNonce64   = nNonce64;
+            block.mix_hash   = mix_hash;
+        } else {
+            block.nNonce     = nNonce;
+		}
         return block;
     }
 

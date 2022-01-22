@@ -7,8 +7,10 @@
 /// unit-tested.
 
 #pragma once
+#ifndef CRYPTO_PROGPOW_ETHASH_INTERNAL_HPP_
+#define CRYPTO_PROGPOW_ETHASH_INTERNAL_HPP_
 
-#include <crypto/ethash/include/ethash/ethash.hpp>
+#include <crypto/progpow/include/ethash/ethash.hpp>
 
 #include "endianness.hpp"
 
@@ -66,3 +68,4 @@ epoch_context_full* create_epoch_context(
 }  // namespace generic
 
 }  // namespace ethash
+#endif // !CRYPTO_PROGPOW_ETHASH_INTERNAL_HPP_

@@ -10,8 +10,10 @@
 /// some places.
 
 #pragma once
+#ifndef CRYPTO_PROGPOW_ENDIANNESS_HPP_
+#define CRYPTO_PROGPOW_ENDIANNESS_HPP_
 
-#include <crypto/ethash/include/ethash/ethash.hpp>
+#include <crypto/progpow/include/ethash/ethash.hpp>
 
 #if _WIN32
 
@@ -97,3 +99,4 @@ struct be
 
 #endif
 }  // namespace ethash
+#endif // !CRYPTO_PROGPOW_ENDIANNESS_HPP_

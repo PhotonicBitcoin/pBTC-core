@@ -70,7 +70,6 @@ public:
         consensus.SegwitHeight = 1;
         consensus.MinBIP9WarningHeight = 1;
         consensus.powLimit = uint256S("000fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff");
-		consensus.phopowLimit = uint256S("000fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff");
         consensus.nPowTargetTimespan = 5 * 60 * 60; // two days
         consensus.nPowTargetSpacing = 5 * 60;
         consensus.fPowAllowMinDifficultyBlocks = false;
@@ -86,6 +85,9 @@ public:
 
         // By default assume that the signatures in ancestors of this block are valid.
         consensus.defaultAssumeValid = uint256(); // 1692000
+
+
+        consensus.nPPSwitchTime = 1642892934;
 
         /**
          * The message start string is designed to be unlikely to occur in normal data.
@@ -139,11 +141,9 @@ public:
 
         // DGW Activation
         nDGWActivationBlock = 3660;
-		
-
-		// PHOPOW Activation
-        nPHOOPOWActivationTime = 4585967301; // Just a placeholder for now * CHANGEME *
-        nPHOPOWActivationTime = nPHOOPOWActivationTime;
+	
+        // ProgPow
+        consensus.nPPSwitchTime = INT_MAX;
     }
 };
 		
@@ -166,7 +166,6 @@ public:
         consensus.MinBIP9WarningHeight = 1;
         // using less pow amount for testnet to speed up mining
         consensus.powLimit = uint256S("000fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff");
-		consensus.phopowLimit = uint256S("000fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff");
         consensus.nPowTargetTimespan = 5 * 60 * 60; // two weeks
         consensus.nPowTargetSpacing = 5 * 60;
         consensus.fPowAllowMinDifficultyBlocks = false;
@@ -224,10 +223,10 @@ public:
 
         // DGW Activation
         nDGWActivationBlock = 200;
+	
+        // ProgPow
+        consensus.nPPSwitchTime = 1680069200;           // 
 		
-		// PHOPOW Activation
-        nPHOOPOWActivationTime = 4585967301; // Just a placeholder for now * CHANGEME *
-        nPHOPOWActivationTime = nPHOOPOWActivationTime;
     }
 };
 
@@ -249,7 +248,6 @@ public:
         consensus.SegwitHeight = 0; // SEGWIT is always activated on regtest unless overridden
         consensus.MinBIP9WarningHeight = 0;
         consensus.powLimit = uint256S("7fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff");
-		consensus.phopowLimit = uint256S("7fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff");
         consensus.nPowTargetTimespan = 5 * 60 * 60; // two weeks
         consensus.nPowTargetSpacing = 5 * 60;
         consensus.fPowAllowMinDifficultyBlocks = true;
@@ -300,10 +298,10 @@ public:
 
         // DGW Activation
         nDGWActivationBlock = 200;
-		
-		// PHOPOW Activation
-        nPHOOPOWActivationTime = 4585967301; // Just a placeholder for now * CHANGEME *
-        nPHOPOWActivationTime = nPHOOPOWActivationTime;
+
+        // ProgPow
+        // this can be overridden with either -ppswitchtime or -ppswitchtimefromnow flags
+        consensus.nPPSwitchTime = INT_MAX;
 		
         base58Prefixes[PUBKEY_ADDRESS] = std::vector<unsigned char>(1,111);
         base58Prefixes[SCRIPT_ADDRESS] = std::vector<unsigned char>(1,196);

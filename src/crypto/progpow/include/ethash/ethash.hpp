@@ -13,9 +13,11 @@
 ///    See https://github.com/Microsoft/GSL/issues/171.
 
 #pragma once
+#ifndef CRYPTO_PROGPOW_ETHASH_HPP_
+#define CRYPTO_PROGPOW_ETHASH_HPP_
 
-#include <crypto/ethash/include/ethash/ethash.h>
-#include <crypto/ethash/include/ethash/hash_types.hpp>
+#include <crypto/progpow/include/ethash/ethash.h>
+#include <crypto/progpow/include/ethash/hash_types.hpp>
 
 #include <cstdint>
 #include <cstring>
@@ -74,7 +76,7 @@ static constexpr auto calculate_epoch_seed = ethash_calculate_epoch_seed;
 /// Calculates the epoch number out of the block number.
 inline constexpr int get_epoch_number(int block_number) noexcept
 {
-    return block_number ? block_number / epoch_length : 0;
+    return block_number / epoch_length;
 }
 
 /**
@@ -170,3 +172,4 @@ inline const epoch_context_full& get_global_epoch_context_full(int epoch_number)
     return *ethash_get_global_epoch_context_full(epoch_number);
 }
 }  // namespace ethash
+#endif // !CRYPTO_PROGPOW_ETHASH_HPP_

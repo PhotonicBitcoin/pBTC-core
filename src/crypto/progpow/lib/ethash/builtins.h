@@ -9,6 +9,8 @@
  */
 
 #pragma once
+#ifndef CRYPTO_PROGPOW_BUILTINS_H_
+#define CRYPTO_PROGPOW_BUILTINS_H_
 
 #ifdef _MSC_VER
 #include <intrin.h>
@@ -21,7 +23,7 @@ extern "C" {
  * Returns the number of leading 0-bits in `x`, starting at the most significant bit position.
  * If `x` is 0, the result is undefined.
  */
-static inline int __builtin_clz(unsigned int x)
+inline int __builtin_clz(unsigned int x)
 {
     unsigned long most_significant_bit;
     _BitScanReverse(&most_significant_bit, x);
@@ -31,7 +33,7 @@ static inline int __builtin_clz(unsigned int x)
 /**
  * Returns the number of 1-bits in `x`.
  */
-static inline int __builtin_popcount(unsigned int x)
+inline int __builtin_popcount(unsigned int x)
 {
     return (int)__popcnt(x);
 }
@@ -41,3 +43,4 @@ static inline int __builtin_popcount(unsigned int x)
 #endif
 
 #endif
+#endif // !CRYPTO_PROGPOW_BUILTINS_H_

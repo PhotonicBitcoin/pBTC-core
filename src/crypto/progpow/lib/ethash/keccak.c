@@ -3,7 +3,7 @@
  * Licensed under the Apache License, Version 2.0.
  */
 
-#include <crypto/ethash/include/ethash/keccak.h>
+#include <crypto/progpow/include/ethash/keccak.h>
 
 #include "../support/attributes.h"
 

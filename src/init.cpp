@@ -17,6 +17,7 @@
 #include <chainparams.h>
 #include <compat/sanity.h>
 #include <consensus/validation.h>
+#include "crypto/progpow.h"
 #include <fs.h>
 #include <httprpc.h>
 #include <httpserver.h>
@@ -1705,6 +1706,16 @@ bool AppInitMain(NodeContext& node)
     if (!est_filein.IsNull())
         ::feeEstimator.Read(est_filein);
     fFeeEstimatesInitialized = true;
+
+    /* ******************************************************** Prepare ProgPow test in regtest mode
+
+    if (Params().GetConsensus().IsRegtest()) {
+        Consensus::Params &mutableParams = const_cast<Consensus::Params &>(Params().GetConsensus());
+        if (IsArgSet("-ppswitchtime"))
+            mutableParams.nPPSwitchTime = GetArg("-ppswitchtime", INT_MAX);
+        else if (IsArgSet("-ppswitchtimefromnow"))
+            mutableParams.nPPSwitchTime = GetArg("-ppswitchtimefromnow", 0) + (uint32_t)GetTime();
+    } */
 
     // ********************************************************* Step 8: start indexers
     if (gArgs.GetBoolArg("-txindex", DEFAULT_TXINDEX)) {

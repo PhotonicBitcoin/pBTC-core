@@ -3266,11 +3266,40 @@ static bool FindUndoPos(BlockValidationState &state, int nFile, FlatFilePos &pos
     return true;
 }
 
+static int GetNHight(const CBlockIndex* pindexPrev)
+{
+	const int nHeight = pindexPrev->nHeight + 1;
+	
+	return nHeight;
+}
+
 static bool CheckBlockHeader(const CBlockHeader& block, BlockValidationState& state, const Consensus::Params& consensusParams, bool fCheckPOW = true)
 {
+	const int nHeight = GetNHight;
+	
     // Check proof of work matches claimed amount
-    if (fCheckPOW && !CheckProofOfWork(block.GetPoWHash(), block.nBits, consensusParams))
-        return state.Invalid(BlockValidationResult::BLOCK_INVALID_HEADER, "high-hash", "proof of work failed");
+
+    if (fCheckPOW)
+    {
+        uint256 final_hash;
+        if (block.IsProgPow())
+        {
+            uint256 exp_mix_hash;
+            final_hash = block.GetProgPowHashFull(exp_mix_hash);
+            if (exp_mix_hash != block.mix_hash)
+            {
+				return state.Invalid(BlockValidationResult::BLOCK_INVALID_HEADER, "invalid-mixhash", "mix_hash validity failed");
+            }
+        } else {
+            final_hash = block.GetPoWHash(nHeight);
+        }
+        if (!CheckProofOfWork(final_hash, block.nBits, consensusParams))
+        {
+				return state.Invalid(BlockValidationResult::BLOCK_INVALID_HEADER, "high-hash", "proof of work failed");
+        }
+
+    }
+
 
     return true;
 }
@@ -3434,6 +3463,15 @@ static bool ContextualCheckBlockHeader(const CBlockHeader& block, BlockValidatio
     assert(pindexPrev != nullptr);
     const int nHeight = pindexPrev->nHeight + 1;
 
+    /*
+	// once ProgPow always ProgPow
+    if (pindexPrev && pindexPrev->nTime >= params.nPPSwitchTime && block.nTime < params.nPPSwitchTime)
+        return state.Invalid(BlockValidationResult::BLOCK_INVALID_HEADER, "bad-blk-progpow-state", "Cannot go back from ProgPOW");
+
+    if (block.IsProgPow() && block.nHeight != nHeight)
+        return state.Invalid(BlockValidationResult::BLOCK_INVALID_HEADER, "bad-blk-progpow", "ProgPOW height doesn't match chain height");
+	*/ // TO DO! Sanity Check for POW!
+	
     // Check proof of work
     const Consensus::Params& consensusParams = params.GetConsensus();
     if (block.nBits != GetNextWorkRequired(pindexPrev, &block, consensusParams))

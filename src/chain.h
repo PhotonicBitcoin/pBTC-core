@@ -12,6 +12,7 @@
 #include <primitives/block.h>
 #include <tinyformat.h>
 #include <uint256.h>
+#include "chainparams.cpp"
 
 #include <vector>
 
@@ -181,6 +182,10 @@ public:
     uint32_t nBits{0};
     uint32_t nNonce{0};
 
+    // PhoPow
+    uint64_t nNonce64{0};
+    uint256 mix_hash{};
+
     //! (memory only) Sequential id assigned to distinguish order in which blocks are received.
     int32_t nSequenceId{0};
 
@@ -227,7 +232,14 @@ public:
         block.hashMerkleRoot = hashMerkleRoot;
         block.nTime          = nTime;
         block.nBits          = nBits;
-        block.nNonce         = nNonce;
+        
+		if (block.IsProgPow()) {
+            block.nHeight    = nHeight;
+            block.nNonce64   = nNonce64;
+            block.mix_hash   = mix_hash;
+        } else {
+            block.nNonce     = nNonce;
+		}
         return block;
     }
 
@@ -343,13 +355,20 @@ public:
         if (obj.nStatus & BLOCK_HAVE_DATA) READWRITE(VARINT(obj.nDataPos));
         if (obj.nStatus & BLOCK_HAVE_UNDO) READWRITE(VARINT(obj.nUndoPos));
 
+        const auto &params = Params().GetConsensus();
+		
         // block header
         READWRITE(obj.nVersion);
         READWRITE(obj.hashPrev);
         READWRITE(obj.hashMerkleRoot);
         READWRITE(obj.nTime);
         READWRITE(obj.nBits);
-        READWRITE(obj.nNonce);
+        if (obj.nTime >= params.nPPSwitchTime) {
+            READWRITE(obj.nNonce64);
+            READWRITE(obj.mix_hash);
+        } else {
+            READWRITE(obj.nNonce);
+		}
     }
 
     uint256 GetBlockHash() const
@@ -360,7 +379,13 @@ public:
         block.hashMerkleRoot  = hashMerkleRoot;
         block.nTime           = nTime;
         block.nBits           = nBits;
-        block.nNonce          = nNonce;
+        if (block.IsProgPow()) {
+            block.nHeight    = nHeight;
+            block.nNonce64   = nNonce64;
+            block.mix_hash   = mix_hash;
+        } else {
+            block.nNonce     = nNonce;
+		}
         return block.GetHash();
     }
 

@@ -275,6 +275,12 @@ bool CBlockTreeDB::LoadBlockIndexGuts(const Consensus::Params& consensusParams, 
                 pindexNew->nStatus        = diskindex.nStatus;
                 pindexNew->nTx            = diskindex.nTx;
 
+                // PhoPoW
+                if (diskindex.nTime > 1638883932 && diskindex.nTime >= consensusParams.nPPSwitchTime) {
+                    pindexNew->nNonce64 = diskindex.nNonce64;
+                    pindexNew->mix_hash = diskindex.mix_hash;
+                }
+
 
                 // Disable PoW Sanity check while loading block index from disk. 
                 // Rationale: doc/obtc-audit.md

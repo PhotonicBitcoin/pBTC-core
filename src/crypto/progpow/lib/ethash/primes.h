@@ -4,8 +4,10 @@
  */
 
 #pragma once
+#ifndef CRYPTO_PROGPOW_PRIMES_H_
+#define CRYPTO_PROGPOW_PRIMES_H_
 
-#include <crypto/ethash/include/ethash/ethash.h>
+#include <crypto/progpow/include/ethash/ethash.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -23,3 +25,4 @@ int ethash_find_largest_prime(int upper_bound) NOEXCEPT;
 #ifdef __cplusplus
 }
 #endif
+#endif // !CRYPTO_PROGPOW_PRIMES_H_

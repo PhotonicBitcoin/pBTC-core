@@ -4,9 +4,11 @@
  */
 
 #pragma once
+#ifndef CRYPTO_PROGPOW_VERSION_HPP_
+#define CRYPTO_PROGPOW_VERSION_HPP_
 
 /** The ethash library version. */
-#define ETHASH_VERSION "0.5.1-alpha.1"
+#define ETHASH_VERSION "0.5.2"
 
 #ifdef __cplusplus
 namespace ethash
@@ -16,3 +18,4 @@ constexpr auto version = ETHASH_VERSION;
 
 }  // namespace ethash
 #endif
+#endif // !CRYPTO_PROGPOW_VERSION_HPP_

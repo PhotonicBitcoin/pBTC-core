@@ -7,9 +7,12 @@
 #include <chain.h>
 #include <chainparams.h>
 #include <consensus/consensus.h>
+#include "consensus/merkle.h"
 #include <consensus/params.h>
 #include <consensus/validation.h>
 #include <core_io.h>
+#include "crypto/progpow.h"
+#include "crypto/progpow/helpers.hpp"
 #include <key_io.h>
 #include <miner.h>
 #include <net.h>
@@ -34,8 +37,14 @@
 #include <versionbitsinfo.h>
 #include <warnings.h>
 
+#include <utility>      // std::pair
 #include <memory>
 #include <stdint.h>
+
+/**
+ * ProgPow
+ */
+std::map<std::string, CBlock> mapPPBlockTemplates;
 
 /**
  * Return average network hashes per second based on the last 'lookup' blocks,
@@ -103,12 +112,13 @@ static UniValue getnetworkhashps(const JSONRPCRequest& request)
 
 static UniValue generateBlocks(const CTxMemPool& mempool, const CScript& coinbase_script, int nGenerate, uint64_t nMaxTries)
 {
+	static const int nInnerLoopCount = 0x10000;
     int nHeightEnd = 0;
     int nHeight = 0;
 
     {   // Don't keep cs_main locked
         LOCK(cs_main);
-        nHeight = ::ChainActive().Height();
+        nHeight    = ::ChainActive().Height();
         nHeightEnd = nHeight+nGenerate;
     }
     unsigned int nExtraNonce = 0;
@@ -123,6 +133,29 @@ static UniValue generateBlocks(const CTxMemPool& mempool, const CScript& coinbas
             LOCK(cs_main);
             IncrementExtraNonce(pblock, ::ChainActive().Tip(), nExtraNonce);
         }
+
+        /**
+         * @AndreaLanfranchi. This loop imho makes no sense for PP
+         * as its' purpose is to "mine" blocks but reading the code the attempts
+         * are interrupted on nMaxTries (default 1M) or when the nonce overflows nInnerLoopCount (65535)
+         * whichever the first. Understandably on PP the nInnerLoopCount si hit quickly as the
+         * nonce range is quite wide (64bits)
+         */
+
+        if (pblock->IsProgPow()) {
+            while (nMaxTries > 0 && pblock->nNonce64 < nInnerLoopCount) {
+                uint256 mix_hash;
+                auto final_hash{progpow_hash_full(pblock->GetProgPowHeader(), mix_hash)};
+                if (CheckProofOfWork(final_hash, pblock->nBits, Params().GetConsensus()))
+                {
+                    pblock->mix_hash = mix_hash;
+                    break;
+                }
+                ++pblock->nNonce64;
+                --nMaxTries;
+            }
+        }
+		
         while (nMaxTries > 0 && pblock->nNonce < std::numeric_limits<uint32_t>::max() && !CheckProofOfWork(pblock->GetPoWHash(), pblock->nBits, Params().GetConsensus()) && !ShutdownRequested()) {
             ++pblock->nNonce;
             --nMaxTries;
@@ -130,7 +163,7 @@ static UniValue generateBlocks(const CTxMemPool& mempool, const CScript& coinbas
         if (nMaxTries == 0 || ShutdownRequested()) {
             break;
         }
-        if (pblock->nNonce == std::numeric_limits<uint32_t>::max()) {
+        if (pblock->nNonce == std::numeric_limits<uint32_t>::max() || pblock->nNonce64 == std::numeric_limits<uint32_t>::max()) {
             continue;
         }
         std::shared_ptr<const CBlock> shared_pblock = std::make_shared<const CBlock>(*pblock);
@@ -558,7 +591,8 @@ static UniValue getblocktemplate(const JSONRPCRequest& request)
     {
         // Clear pindexPrev so future calls make a new block, despite any failures from here on
         pindexPrev = nullptr;
-
+        mapPPBlockTemplates.clear();
+		
         // Store the pindexBest used before CreateNewBlock, to avoid races
         nTransactionsUpdatedLast = mempool.GetTransactionsUpdated();
         CBlockIndex* pindexPrevNew = ::ChainActive().Tip();
@@ -744,6 +778,114 @@ protected:
     }
 };
 
+/* static UniValue pprpcsb(const JSONRPCRequest& request)
+{ 
+    if (request.fHelp || request.params.size() != 3) {
+        throw std::runtime_error(
+                "pprpcsb \"header_hash\" \"mix_hash\" \"nonce\"\n"
+                "\nAttempts to submit a progpow solution to block via rpc.\n"
+
+                "\nArguments\n"
+                "1. \"header_hash\"        (string, required) the prow_pow header hash that was given to the gpu miner from this rpc client\n"
+                "2. \"mix_hash\"           (string, required) the mix hash that was mined by the gpu miner via rpc\n"
+                "3. \"nonce\"              (string, required) the nonce of the block that hashed the valid block\n"
+                "\nResult:\n"
+                "\nExamples:\n"
+                + HelpExampleCli("pprpcsb", "\"header_hash\" \"mix_hash\" 100000")
+                + HelpExampleRpc("pprpcsb", "\"header_hash\" \"mix_hash\" 100000")
+        );
+    }
+
+    std::string header_hex = request.params[0].get_str();
+    std::string mix_hex = request.params[1].get_str();
+    std::string nonce_hex = request.params[2].get_str();
+
+    // Parse nonce
+    uint64_t nonce{0};
+    try
+    {
+        nonce = std::stoull(nonce_hex, nullptr, 0);
+    }
+    catch(...)
+    {
+        throw JSONRPCError(RPC_INVALID_PARAMS, "Invalid hex nonce");
+    }
+
+    // Check provided header_hash is in cache
+    if (!mapPPBlockTemplates.count(header_hex))
+    {
+        throw JSONRPCError(RPC_INVALID_PARAMS, "Job not found");
+    }
+
+    std::shared_ptr<CBlock> blockptr = std::make_shared<CBlock>();
+    *blockptr = mapPPBlockTemplates.at(header_hex);
+    blockptr->nNonce64 = nonce;
+
+    // Check provided solution is formally valid
+    uint256 act_mix_hash = uint256S(mix_hex);
+    uint256 exp_mix_hash{};
+    uint256 final_hash = blockptr->GetProgPowHashFull(exp_mix_hash);
+    if (act_mix_hash != exp_mix_hash)
+    {
+        throw JSONRPCError(RPC_INVALID_PARAMS, "Bad solution : mismatching mix_hash");
+    }
+
+    // Check provided solution honors boundaries
+    if (!CheckProofOfWork(final_hash, blockptr->nBits, Params().GetConsensus()))
+    {
+        throw JSONRPCError(RPC_INVALID_PARAMS, "Bad solution : not below target");
+    }
+
+    // Store mix_hash
+    blockptr->mix_hash = exp_mix_hash;
+    uint256 blockHash = blockptr->GetHash();
+
+    bool fBlockPresent{false};
+    {
+        LOCK(cs_main);
+        BlockMap::iterator mi{mapBlockIndex.find(blockHash)};
+        if (mi != mapBlockIndex.end())
+        {
+            CBlockIndex* indexptr{mi->second};
+            if (indexptr->IsValid(BLOCK_VALID_SCRIPTS))
+            {
+                return "duplicate";
+            }
+            if (indexptr->nStatus & BLOCK_FAILED_MASK)
+            {
+                return "duplicate-invalid";
+            }
+
+        }
+        // Otherwise, we might only have the header - process the block before returning
+        fBlockPresent = true;
+
+        mi = mapBlockIndex.find(blockptr->hashPrevBlock);
+        if (mi != mapBlockIndex.end()) {
+            UpdateUncommittedBlockStructures(*blockptr, mi->second, Params().GetConsensus());
+        }
+    }
+
+    // Process block
+    submitblock_StateCatcher sc(blockHash);
+    RegisterValidationInterface(&sc);
+    bool fAccepted = ProcessNewBlock(Params(), blockptr, true, nullptr);
+    UnregisterValidationInterface(&sc);
+    if (fBlockPresent)
+    {
+        if (fAccepted && !sc.found)
+        {
+            return "duplicate-inconclusive";
+        }
+        return "duplicate";
+    }
+    if (!sc.found)
+    {
+        return "inconclusive";
+    }
+
+    return BIP22ValidationResult(sc.state);
+} */ // TO DO !!! RPC ProgPow Status Command
 static UniValue submitblock(const JSONRPCRequest& request)
 {
     // We allow 2 arguments for compliance with BIP22. Argument 2 is ignored.
@@ -1034,6 +1176,9 @@ static const CRPCCommand commands[] =
     { "mining",             "getmininginfo",          &getmininginfo,          {} },
     { "mining",             "prioritisetransaction",  &prioritisetransaction,  {"txid","dummy","fee_delta"} },
     { "mining",             "getblocktemplate",       &getblocktemplate,       {"template_request"} },
+	
+  //  { "mining",             "pprpcsb",                &pprpcsb,                true,  {"header_hash","mix_hash", "nonce"} },
+	
     { "mining",             "submitblock",            &submitblock,            {"hexdata","dummy"} },
     { "mining",             "submitheader",           &submitheader,           {"hexdata"} },
 

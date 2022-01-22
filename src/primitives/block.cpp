@@ -6,10 +6,19 @@
 #include <primitives/block.h>
 #include <hash.h>
 #include <tinyformat.h>
+#include "chainparams.h"
+#include "crypto/progpow.h"
 
 uint256 CBlockHeader::GetHash() const
 {
     return GetPoWHash();
+}
+
+uint256 CBlockHeader::GetHashFull(uint256& mix_hash) const {
+    if (IsProgPow()) {
+        return GetProgPowHashFull(mix_hash);
+    }
+    return GetHash();
 }
 
 uint256 CBlockHeader::GetPoWHash() const
@@ -21,6 +30,37 @@ uint256 CBlockHeader::GetPoWHash() const
     return SerializeHeavyHash(*this, matrix);
 }
 
+bool CBlockHeader::IsProgPow() const {
+    // This isnt ideal, but suffers from the same issue as the IsMTP() call above. Also can't get
+    // chainActive/mapBlockIndex in the consensus library (without disabling binary hardening)..
+    return (nTime > 1638883932 && nTime >= Params().GetConsensus().nPPSwitchTime);
+}
+
+CProgPowHeader CBlockHeader::GetProgPowHeader() const {
+    return CProgPowHeader {
+        nVersion,
+        hashPrevBlock,
+        hashMerkleRoot,
+        nTime,
+        nBits,
+        nHeight,
+        nNonce64,
+        mix_hash
+    };
+}
+
+uint256 CBlockHeader::GetProgPowHeaderHash() const 
+{
+    return SerializeHash(GetProgPowHeader());
+}
+
+uint256 CBlockHeader::GetProgPowHashFull(uint256& mix_hash) const {
+    return progpow_hash_full(GetProgPowHeader(), mix_hash);
+}
+
+uint256 CBlockHeader::GetProgPowHashLight() const {
+    return progpow_hash_light(GetProgPowHeader());
+}
 std::string CBlock::ToString() const
 {
     std::stringstream s;

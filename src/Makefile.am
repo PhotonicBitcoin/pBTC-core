@@ -389,30 +389,6 @@ crypto_libbitcoin_crypto_base_a_SOURCES = \
   crypto/sha256.cpp \
   crypto/sha256.h \
   crypto/sha512.cpp \
-  crypto/ethash/include/ethash/ethash.h \
-  crypto/ethash/include/ethash/ethash.hpp \
-  crypto/ethash/include/ethash/hash_types.h \
-  crypto/ethash/include/ethash/hash_types.hpp \
-  crypto/ethash/include/ethash/keccak.h \
-  crypto/ethash/include/ethash/keccak.hpp \
-  crypto/ethash/include/ethash/phopow.hpp \
-  crypto/ethash/include/ethash/version.h \
-  crypto/ethash/lib/ethash/bit_manipulation.h \
-  crypto/ethash/lib/ethash/builtins.h \
-  crypto/ethash/lib/ethash/endianness.hpp \
-  crypto/ethash/lib/ethash/ethash.cpp \
-  crypto/ethash/lib/ethash/ethash-internal.hpp \
-  crypto/ethash/lib/ethash/kiss99.hpp \
-  crypto/ethash/lib/ethash/managed.cpp \
-  crypto/ethash/lib/ethash/primes.c \
-  crypto/ethash/lib/ethash/primes.h \
-  crypto/ethash/lib/ethash/phopow.cpp \
-  crypto/ethash/lib/keccak/keccak.c \
-  crypto/ethash/lib/keccak/keccakf1600.c \
-  crypto/ethash/lib/keccak/keccakf800.c \
-  crypto/ethash/lib/support/attributes.h \
-  crypto/ethash/helpers.hpp \
-  crypto/ethash/phopow_test_vectors.hpp \
   crypto/sha512.h \
   crypto/siphash.cpp \
   crypto/siphash.h \
@@ -421,6 +397,35 @@ crypto_libbitcoin_crypto_base_a_SOURCES = \
   crypto/heavyhash.h \
   crypto/heavyhash.cpp \
   crypto/xoshiro256pp.h
+  
+ crypto_libbitcoin_crypto_a_SOURCES = \
+  crypto/progpow/include/ethash/ethash.h \
+  crypto/progpow/include/ethash/ethash.hpp \
+  crypto/progpow/include/ethash/hash_types.h \
+  crypto/progpow/include/ethash/hash_types.hpp \
+  crypto/progpow/include/ethash/keccak.h \
+  crypto/progpow/include/ethash/keccak.hpp \
+  crypto/progpow/include/ethash/progpow.hpp \
+  crypto/progpow/include/ethash/version.h \
+  crypto/progpow/lib/ethash/bit_manipulation.h \
+  crypto/progpow/lib/ethash/builtins.h \
+  crypto/progpow/lib/ethash/endianness.hpp \
+  crypto/progpow/lib/ethash/ethash-internal.hpp \
+  crypto/progpow/lib/ethash/ethash.cpp \
+  crypto/progpow/lib/ethash/kiss99.hpp \
+  crypto/progpow/lib/ethash/managed.cpp \
+  crypto/progpow/lib/ethash/primes.c \
+  crypto/progpow/lib/ethash/primes.h \
+  crypto/progpow/lib/ethash/progpow.cpp \
+  crypto/progpow/lib/keccak/keccak.c \
+  crypto/progpow/lib/keccak/keccakf1600.c \
+  crypto/progpow/lib/keccak/keccakf800.c \
+  crypto/progpow/lib/support/attributes.h \
+  crypto/progpow/helpers.hpp \
+  crypto/progpow/phopow_test_vectors.hpp \
+  crypto/progpow.h \
+  crypto/progpow.cpp
+
 
 if USE_ASM
 crypto_libbitcoin_crypto_base_a_SOURCES += crypto/sha256_sse4.cpp
@@ -679,7 +684,7 @@ if GLIBC_BACK_COMPAT
 endif
 
 libbitcoinconsensus_la_LDFLAGS = $(AM_LDFLAGS) -no-undefined $(RELDFLAGS)
-libbitcoinconsensus_la_LIBADD = $(LIBSECP256K1) $(BOOST_LIBS)
+libbitcoinconsensus_la_LIBADD = $(LIBSECP256K1)
 libbitcoinconsensus_la_CPPFLAGS = $(AM_CPPFLAGS) -I$(builddir)/obj -I$(srcdir)/secp256k1/include -DBUILD_BITCOIN_INTERNAL $(BOOST_CPPFLAGS)
 libbitcoinconsensus_la_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
 

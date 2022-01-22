@@ -4,8 +4,10 @@
  */
 
 #pragma once
+#ifndef CRYPTO_PROGPOW_ETHASH_H_
+#define CRYPTO_PROGPOW_ETHASH_H_
 
-#include <crypto/ethash/include/ethash/hash_types.h>
+#include <crypto/progpow/include/ethash/hash_types.h>
 
 #include <stdbool.h>
 #include <stdint.h>
@@ -26,7 +28,15 @@ extern "C" {
  */
 #define ETHASH_REVISION "23"
 
-#define ETHASH_EPOCH_LENGTH 7500
+/**
+ * Ethereum epoch is 30000 blocks which, with an avg 13 sec block time, corresponds
+ * to roughly 108 hours i.e. 4.5 days. To achieve the same DAG growth rate with
+ * a block time of 5 min we need to set epoch length to 30000/(300/13) which
+ * provides a DAG increase every 1300 blocks i.e. 4.51 days
+ * See "./lib/ethash/ethash.cpp" for increase size(s)
+ */
+
+#define ETHASH_EPOCH_LENGTH 1300
 #define ETHASH_LIGHT_CACHE_ITEM_SIZE 64
 #define ETHASH_FULL_DATASET_ITEM_SIZE 128
 #define ETHASH_NUM_DATASET_ACCESSES 64
@@ -129,3 +139,4 @@ bool ethash_verify_final_hash(const union ethash_hash256* header_hash,
 #ifdef __cplusplus
 }
 #endif
+#endif // !CRYPTO_PROGPOW_ETHASH_H_
